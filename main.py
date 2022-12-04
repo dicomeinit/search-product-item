@@ -1,8 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
+import pandas as pd
+import json
 
 
 URL = "https://jysk.ua/noviy-rik-ta-rizdvo/cvichniki/likhtari"
+
 
 response = requests.get(URL)
 data = response.text
@@ -44,3 +47,22 @@ for i in images_link:
 
 print(product_images)
 print(len(product_images))
+
+d = {'Name': product_name,'Price': product_price, 'Image': product_images}
+df = pd.DataFrame(d, columns=['Name','Price','Image'])
+print(df)
+result = df.to_json(orient="records")
+parsed = json.loads(result)
+json.dumps(parsed, indent=4)
+
+
+list_dict = []
+
+for index, row in list(df.iterrows()):
+    list_dict.append(dict(row))
+
+# with open("output.json", 'w') as f:
+#     f.write("\n".join(str(item) for item in list_dict))
+
+with open("output.csv", 'w') as f:
+    f.write("\n".join(str(item) for item in list_dict))
